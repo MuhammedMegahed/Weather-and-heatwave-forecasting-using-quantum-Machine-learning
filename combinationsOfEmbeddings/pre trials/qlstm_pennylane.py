@@ -67,25 +67,25 @@ class QLSTM(nn.Module):
             3. Measure the result using Pauli-Z expectation values.
         """
         def _circuit_forget(inputs, weights):
-            qml.templates.AmplitudeEmbedding(inputs, wires=self.wires_forget) # Encodes classical data into qubit states using angle embedding.
+            qml.templates.BasisEmbedding(inputs, wires=self.wires_forget) # Encodes classical data into qubit states using angle embedding.
             qml.templates.CVNeuralNetLayers(weights, wires=self.wires_forget) # Applies trainable quantum layers (entanglement + rotations).
             return [qml.expval(qml.PauliZ(wires=w)) for w in self.wires_forget] # Measures the result using Pauli-Z expectation values.
         self.qlayer_forget = qml.QNode(_circuit_forget, self.dev_forget, interface="torch")
 
         def _circuit_input(inputs, weights):
-            qml.templates.AmplitudeEmbedding(inputs, wires=self.wires_input)
+            qml.templates.BasisEmbedding(inputs, wires=self.wires_input)
             qml.templates.CVNeuralNetLayers(weights, wires=self.wires_input)
             return [qml.expval(qml.PauliZ(wires=w)) for w in self.wires_input]
         self.qlayer_input = qml.QNode(_circuit_input, self.dev_input, interface="torch")
 
         def _circuit_update(inputs, weights):
-            qml.templates.AmplitudeEmbedding(inputs, wires=self.wires_update)
+            qml.templates.BasisEmbedding(inputs, wires=self.wires_update)
             qml.templates.CVNeuralNetLayers(weights, wires=self.wires_update)
             return [qml.expval(qml.PauliZ(wires=w)) for w in self.wires_update]
         self.qlayer_update = qml.QNode(_circuit_update, self.dev_update, interface="torch")
 
         def _circuit_output(inputs, weights):
-            qml.templates.AmplitudeEmbedding(inputs, wires=self.wires_output)
+            qml.templates.BasisEmbedding(inputs, wires=self.wires_output)
             qml.templates.CVNeuralNetLayers(weights, wires=self.wires_output)
             return [qml.expval(qml.PauliZ(wires=w)) for w in self.wires_output]
         self.qlayer_output = qml.QNode(_circuit_output, self.dev_output, interface="torch")
